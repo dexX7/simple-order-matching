@@ -226,8 +226,8 @@ class MatchingEngine:
 
         # sort orders by price and timestamp
         # timestamp represents block height and transaction position
-        potential_orders.sort(key=lambda order: order.timestamp, reverse=True)
-        potential_orders.sort(key=lambda order: order.unit_price, reverse=True)
+        potential_orders.sort(key=lambda order: order.timestamp)
+        potential_orders.sort(key=lambda order: order.unit_price)
 
         return potential_orders
 
@@ -253,7 +253,7 @@ class MatchingEngine:
 
         # the best match should be the last item in the list
         if len(potential_matches) > 0:
-            best_match = potential_matches.pop()
+            best_match = potential_matches[0]
 
         log("Best match for Order %s:" % new_order.print_id())
         log(best_match)
@@ -488,11 +488,11 @@ def log(msg, level=2):
 if __name__ == "__main__":
     engine = MatchingEngine()
 
-    #create two orders
+    # create two orders
     orderA = Order(cIndiv2, 20, cIndiv1, 10)
     orderB = Order(cIndiv1, 12, cIndiv2, 17)
 
-    ##add orders to the orderbook
+    # add orders to the orderbook
     engine.add_order(orderA)
     engine.add_order(orderB)
     
