@@ -130,9 +130,9 @@ class Order(object):
     def get_unit_price_inverse(self):
         """Inverse of upper price limit to match against other orders"""
         unit_price_inverse = float('NaN')
-        unit_price = self.get_unit_price()
-        if unit_price > 0.0:
-            unit_price_inverse = 1.0 / unit_price
+        if self.amount_desired > 0:
+            unit_price_inverse = \
+                float(self.amount_for_sale) / float(self.amount_desired)
         return unit_price_inverse
 
     def get_received_amount(self):
@@ -407,7 +407,7 @@ class MatchingEngine:
         
         # check, if price after rounding up is within accepted range
         updated_unit_price = float(amount_to_a1) /  float(amount_to_a2)
-        updated_unit_price_inverse = 1.0 / updated_unit_price
+        updated_unit_price_inverse = float(amount_to_a2) /  float(amount_to_a1)
         assert order_old.would_accept(updated_unit_price)
         assert order_new.would_accept(updated_unit_price_inverse)
 
