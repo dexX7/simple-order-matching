@@ -88,8 +88,8 @@ class Order(object):
                  currency_desired, amount_desired, timestamp=None,
                  status=0):
 
-        assert 0 < int(math.floor(amount_for_sale))
-        assert 0 < int(math.floor(amount_desired))        
+        assert 0 < long(math.floor(amount_for_sale))
+        assert 0 < long(math.floor(amount_desired))        
         assert currency_for_sale != currency_desired
 
         # assign ascending, unique id
@@ -97,7 +97,7 @@ class Order(object):
         
         # represents block height and transaction index
         if None == timestamp:
-            timestamp = int(round(time.time() * 1000))
+            timestamp = long(round(time.time() * 1000))
 
         self.timestamp = timestamp
         self.status = status
@@ -105,8 +105,8 @@ class Order(object):
         self.currency_desired = currency_desired
 
         # only whole units can be traded!
-        self.amount_desired = int(math.ceil(amount_desired))
-        self.amount_for_sale = int(math.floor(amount_for_sale))        
+        self.amount_desired = long(math.ceil(amount_desired))
+        self.amount_for_sale = long(math.floor(amount_for_sale))        
 
         # this should never be not the case unless forced
         assert self.amount_desired == amount_desired
@@ -193,8 +193,8 @@ class Order(object):
         The order is updated based on received and spent amounts. The 
         order is considered as completely filled, if the full "desired" 
         amount is reached."""
-        assert 0 < int(math.floor(amount_received))
-        assert 0 < int(math.floor(amount_spent))
+        assert 0 < long(math.floor(amount_received))
+        assert 0 < long(math.floor(amount_spent))
         
         # desired amount is based on limit price
         updated_amount_desired = self.amount_desired - amount_received
@@ -206,7 +206,7 @@ class Order(object):
         # rounding up was chosen, because the user still receives the 
         # amount he wanted in the first place in total and in the case 
         # of rounding down the price may be "below market price"
-        updated_amount_for_sale = int(math.ceil(updated_amount_for_sale))
+        updated_amount_for_sale = long(math.ceil(updated_amount_for_sale))
         assert updated_amount_for_sale == updated_amount_for_sale
 
         # make sure not more than remaining units are sold
@@ -266,7 +266,7 @@ class Order(object):
 
         # explicitly round down to a whole number to avoid problems 
         # based on strange floating point representations
-        amount_for_sale = int(math.floor(amount_for_sale))
+        amount_for_sale = long(math.floor(amount_for_sale))
 
         return cls(currency_for_sale, amount_for_sale,
                    currency_desired, amount_desired)
@@ -282,7 +282,7 @@ class Order(object):
 
         # explicitly round down to a whole number to avoid problems 
         # based on strange floating point representations
-        amount_for_sale = int(math.floor(amount_for_sale))
+        amount_for_sale = long(math.floor(amount_for_sale))
 
         return cls(currency_for_sale, amount_for_sale,
                    currency_desired, amount_desired)
@@ -298,16 +298,16 @@ class Order(object):
             cls, order, new_amount_for_sale, new_amount_desired):
         """Fires event with updated amounts before applying them."""
         assert isinstance(order, Order)
-        assert isinstance(new_amount_for_sale, int)
-        assert isinstance(new_amount_desired, int)
+        assert isinstance(new_amount_for_sale, long)
+        assert isinstance(new_amount_desired, long)
         order.onPendingAmountUpdate(order, new_amount_for_sale, new_amount_desired)
 
     @classmethod
     def report_updated_order(cls, order, amount_received, amount_spent):
         """Fires event with given and received amounts after a trade."""
         assert isinstance(order, Order)
-        assert isinstance(amount_received, int)
-        assert isinstance(amount_spent, int)
+        assert isinstance(amount_received, long)
+        assert isinstance(amount_spent, long)
         order.onUpdatedOrder(order, amount_received, amount_spent)
 
     @classmethod
@@ -386,8 +386,8 @@ class MatchingEngine:
         amounts is returned."""
         assert None != order_old
         assert None != order_new
-        assert 0 < int(math.floor(order_old.amount_for_sale))
-        assert 0 < int(math.floor(order_new.amount_for_sale))
+        assert 0 < long(math.floor(order_old.amount_for_sale))
+        assert 0 < long(math.floor(order_new.amount_for_sale))
         assert order_old.matches_with(order_new)
         assert order_new.matches_with(order_old)
 
@@ -402,8 +402,8 @@ class MatchingEngine:
         assert a2_desired == order_new.amount_desired
         
         # these are the traded amounts
-        amount_to_a2 = int(min(a2_desired, a1_available))
-        amount_to_a1 = int(math.ceil(amount_to_a2 * a1_unit_price))
+        amount_to_a2 = long(min(a2_desired, a1_available))
+        amount_to_a1 = long(math.ceil(amount_to_a2 * a1_unit_price))
         
         # check, if price after rounding up is within accepted range
         updated_unit_price = float(amount_to_a1) /  float(amount_to_a2)
@@ -466,6 +466,6 @@ class MatchingEngine:
         """Fires event after a trade with traded amounts and orders."""
         assert isinstance(order_a1, Order)
         assert isinstance(order_a2, Order)
-        assert isinstance(amount_to_a1, int)
-        assert isinstance(amount_to_a2, int)
+        assert isinstance(amount_to_a1, long)
+        assert isinstance(amount_to_a2, long)
         sender.onTrade(order_a1, order_a2, amount_to_a1, amount_to_a2)
