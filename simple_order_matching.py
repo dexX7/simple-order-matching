@@ -300,7 +300,7 @@ class Order(object):
         assert isinstance(order, Order)
         assert isinstance(new_amount_for_sale, long)
         assert isinstance(new_amount_desired, long)
-        order.onPendingAmountUpdate(order, new_amount_for_sale, new_amount_desired)
+        cls.onPendingAmountUpdate(order, new_amount_for_sale, new_amount_desired)
 
     @classmethod
     def report_updated_order(cls, order, amount_received, amount_spent):
@@ -308,14 +308,14 @@ class Order(object):
         assert isinstance(order, Order)
         assert isinstance(amount_received, long)
         assert isinstance(amount_spent, long)
-        order.onUpdatedOrder(order, amount_received, amount_spent)
+        cls.onUpdatedOrder(order, amount_received, amount_spent)
 
     @classmethod
     def report_status_update(cls, order, status):
         """Fires event with updated status."""
         assert isinstance(order, Order)
         assert isinstance(status, int)
-        order.onStatusUpdate(order, status)
+        cls.onStatusUpdate(order, status)
  
                
 class MatchingEngine:
@@ -365,7 +365,7 @@ class MatchingEngine:
         assert None != order_new
 
         # announce arrival of a new order
-        self.report_order_arrival(self, order_new)
+        self.report_order_arrival(order_new)
 
         # the best match is the cheapest and oldest one
         best_match = self.get_best_match(order_new)
@@ -430,8 +430,7 @@ class MatchingEngine:
             self.get_traded_amounts(order_old, order_new)
         
         # report trade
-        self.report_trade(
-            self, order_old, order_new, amount_to_a1, amount_to_a2)
+        self.report_trade(order_old, order_new, amount_to_a1, amount_to_a2)
         
         # update existing order based on traded amounts
         order_old.update_order(amount_to_a1, amount_to_a2)
@@ -455,17 +454,17 @@ class MatchingEngine:
             response += "\n" + str(order)
         return response
     
-    @staticmethod
-    def report_order_arrival(sender, order):
+    @classmethod
+    def report_order_arrival(cls, order):
         """Fires event for enqueued Order."""
         assert isinstance(order, Order)
-        sender.onOrderArrival(order)
+        cls.onOrderArrival(order)
 
-    @staticmethod
-    def report_trade(sender, order_a1, order_a2, amount_to_a1, amount_to_a2):
+    @classmethod
+    def report_trade(cls, order_a1, order_a2, amount_to_a1, amount_to_a2):
         """Fires event after a trade with traded amounts and orders."""
         assert isinstance(order_a1, Order)
         assert isinstance(order_a2, Order)
         assert isinstance(amount_to_a1, long)
         assert isinstance(amount_to_a2, long)
-        sender.onTrade(order_a1, order_a2, amount_to_a1, amount_to_a2)
+        cls.onTrade(order_a1, order_a2, amount_to_a1, amount_to_a2)
