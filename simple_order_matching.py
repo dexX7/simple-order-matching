@@ -57,6 +57,21 @@ class Orderbook(object):
         potential_orders.sort(key=lambda order: order.timestamp)
         potential_orders.sort(key=lambda order: order.get_unit_price())
         return potential_orders
+    
+    def get_currrencies(self):
+        """Retrieve all currency pairs with at least one open order."""
+        currencies = []
+
+        for order in self.orders:
+            pair = (order.currency_desired, order.currency_for_sale)
+
+            if pair not in currencies:
+                pair_inverse = (order.currency_for_sale, order.currency_desired)
+                if pair_inverse not in currencies:
+                    currencies.append(pair)
+
+        return currencies
+
 
     @classmethod
     def report_listing(cls, order):
